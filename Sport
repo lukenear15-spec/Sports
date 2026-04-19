@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MITH Sports AI — Player Intelligence Platform</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #0a0e1a;
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background subtle grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(46, 117, 182, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46, 117, 182, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* NAV */
+  nav {
+    padding: 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(46, 117, 182, 0.2);
+  }
+
+  .logo {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: white;
+  }
+
+  .logo span {
+    color: #2E75B6;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #2E75B6;
+    font-weight: 400;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  .nav-badge {
+    background: rgba(46, 117, 182, 0.15);
+    border: 1px solid rgba(46, 117, 182, 0.4);
+    color: #2E75B6;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #2E75B6;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    font-weight: bold;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 28px;
+    color: white;
+  }
+
+  .hero h1 .highlight {
+    color: #2E75B6;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 20px);
+    color: rgba(255,255,255,0.6);
+    max-width: 600px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    background: #2E75B6;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 40px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .hero-cta:hover { background: #1F5A9E; }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(46,117,182,0.4), transparent);
+    margin: 20px 0;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(46, 117, 182, 0.15);
+    border: 1px solid rgba(46, 117, 182, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 60px 0;
+  }
+
+  .stat {
+    background: #0a0e1a;
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 40px;
+    font-weight: 900;
+    color: #2E75B6;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* FEATURES */
+  .section-title {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #2E75B6;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .section-heading {
+    text-align: center;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    margin-bottom: 60px;
+    line-height: 1.2;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 80px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(46, 117, 182, 0.2);
+    border-radius: 8px;
+    padding: 32px 28px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(46, 117, 182, 0.5);
+    background: rgba(46, 117, 182, 0.05);
+  }
+
+  .feature-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .feature-card h3 {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+  }
+
+  /* THE DIFFERENCE */
+  .difference {
+    background: rgba(46, 117, 182, 0.08);
+    border: 1px solid rgba(46, 117, 182, 0.2);
+    border-radius: 8px;
+    padding: 48px;
+    margin-bottom: 80px;
+    text-align: center;
+  }
+
+  .difference blockquote {
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 900;
+    line-height: 1.4;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  .difference blockquote span {
+    color: #2E75B6;
+  }
+
+  .difference cite {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .step {
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+  }
+
+  .step-number {
+    width: 48px;
+    height: 48px;
+    background: rgba(46, 117, 182, 0.15);
+    border: 2px solid #2E75B6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #2E75B6;
+    margin: 0 auto 16px;
+  }
+
+  .step h3 {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: white;
+  }
+
+  .step p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+
+  /* ORIGIN */
+  .origin {
+    border-left: 3px solid #2E75B6;
+    padding: 32px 40px;
+    margin-bottom: 80px;
+    background: rgba(46, 117, 182, 0.05);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .origin h3 {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #2E75B6;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .origin p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.8;
+    max-width: 680px;
+  }
+
+  .origin p strong {
+    color: white;
+  }
+
+  /* COMING SOON */
+  .coming-soon {
+    text-align: center;
+    padding: 80px 0;
+    border-top: 1px solid rgba(46, 117, 182, 0.2);
+  }
+
+  .coming-soon h2 {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 900;
+    margin-bottom: 16px;
+  }
+
+  .coming-soon p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 40px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .email-form {
+    display: flex;
+    gap: 12px;
+    max-width: 440px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .email-form input {
+    flex: 1;
+    min-width: 240px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(46, 117, 182, 0.4);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .email-form input::placeholder { color: rgba(255,255,255,0.3); }
+  .email-form input:focus { border-color: #2E75B6; }
+
+  .email-form button {
+    background: #2E75B6;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .email-form button:hover { background: #1F5A9E; }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer .logo { font-size: 18px; }
+
+  footer p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 60px 0 48px; }
+    .stats-bar { grid-template-columns: 1fr; }
+    .difference { padding: 32px 24px; }
+    .origin { padding: 24px; }
+    footer { justify-content: center; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- NAV -->
+  <nav>
+    <div>
+      <div class="logo">MITH<span>.</span></div>
+      <div class="logo-sub">Sports AI</div>
+    </div>
+    <div class="nav-badge">Coming Soon</div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">AI-Powered Player Intelligence</div>
+    <h1>
+      Find the players<br>
+      <span class="highlight">nobody else can see.</span>
+    </h1>
+    <p>
+      MITH Sports AI analyzes game film to surface player impact that never appears in a box score. Built for college basketball programs navigating the transfer portal.
+    </p>
+    <a href="#notify" class="hero-cta">Get Early Access</a>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-number">15</div>
+      <div class="stat-label">Day Portal Window</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">1,500+</div>
+      <div class="stat-label">Portal Players Annually</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Tools That Watch Film</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section-title">What MITH Does</div>
+  <div class="section-heading">Intelligence that lives<br>in the film.</div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>True Impact Score</h3>
+      <p>A proprietary player valuation model that measures total impact on winning — including and especially the contributions that never appear in a box score.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>AI Film Analysis</h3>
+      <p>Upload the film you already have. MITH's AI watches every possession and extracts behavioral data — off-ball movement, defensive positioning, screen intelligence, effort — automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Role Gap Detection</h3>
+      <p>Identifies players being used in the wrong role whose true value is hidden from every traditional scouting tool. The diamond-in-the-rough signal, surfaced systematically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <h3>NIL Valuation Layer</h3>
+      <p>The Impact-to-Cost Ratio connects True Impact Score to NIL market data — so programs know whether a player's ask is justified before the negotiation begins.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏀</div>
+      <h3>Scheme Fit Intelligence</h3>
+      <p>Every program runs a different system. MITH maps players to your specific scheme — not a generic standard — surfacing fits that conventional recruiting never finds.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Confidence Indicator</h3>
+      <p>Every score carries a reliability rating based on possession volume and film data. You always know exactly how much to trust the number you are looking at.</p>
+    </div>
+  </div>
+
+  <!-- THE DIFFERENCE -->
+  <div class="difference">
+    <blockquote>
+      "Every other tool tells coaches<br>
+      what a player <span>scored.</span><br>
+      We tell them what a player <span>is worth.</span>"
+    </blockquote>
+    <cite>— The MITH Difference</cite>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section-title">How It Works</div>
+  <div class="section-heading">Three steps.<br>One unfair advantage.</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>Upload Film</h3>
+      <p>Connect your existing film library or upload directly. Works with Hudl and major platforms. No new hardware required.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>AI Analyzes</h3>
+      <p>MITH watches every possession. Tracks 25 behavioral variables across all three buckets — on-ball, off-ball, and team impact.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>Find Your Players</h3>
+      <p>Ranked player cards. True Impact Scores. Role Gap alerts. NIL valuations. Everything your staff needs in a 15-day window.</p>
+    </div>
+  </div>
+
+  <!-- ORIGIN STORY -->
+  <div class="origin">
+    <h3>The Name</h3>
+    <p>
+      In basketball, <strong>Mouse in the House</strong> describes the overlooked player who wins the matchup anyway — not through size or reputation, but through intelligence, positioning, and qualities nobody was measuring. <strong>MITH finds that player.</strong> Systematically. At scale. Before anyone else does.
+    </p>
+  </div>
+
+  <!-- COMING SOON / EMAIL CAPTURE -->
+  <div class="coming-soon" id="notify">
+    <h2>Built for the 2027<br>portal window.</h2>
+    <p>
+      MITH is currently in development. Join the waitlist for early access and be the first program to find what everyone else is missing.
+    </p>
+    <div class="email-form">
+      <input type="email" placeholder="your@program.edu" />
+      <button type="button">Join Waitlist</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <div class="logo">MITH<span style="color:#2E75B6;">.</span></div>
+      <div class="logo-sub">Sports AI</div>
+    </div>
+    <p>© 2026 MITH Sports AI &nbsp;·&nbsp; MITHsports.ai &nbsp;·&nbsp; Confidential</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
